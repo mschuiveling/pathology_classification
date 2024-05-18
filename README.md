@@ -61,7 +61,7 @@ pip install .
 ```
 
 ### What you need to supply
-Create a manifest csv-file containing at least the columns "slide_id" and "slide_path". The slide_id column should contain a unique identifier for every whole-slide image. The slide_path column should be the absolute path to the corresponding slide. In addition, you can supply as many columns with data about these slides as desired. 
+Create a manifest csv-file containing at least the columns "slide_id", 'multiple_selection' and "slide_path". The slide_id column should contain a unique identifier for every whole-slide image. The 'multiple_selection' column needs to be yes or no and defines whether a slide needs to be take along or not. The slide_path column should be the absolute path to the corresponding slide. In addition, you can supply as many columns with data about these slides as desired. 
 ```
 slide_id, slide_path, binary_label_1, binary_label_2, segmentation_path_1, characteristic_1
 example_1, /path/to/example_1.ndpi, 1, 0, /path/to/example_1_segmentation.geojson, lymph_node

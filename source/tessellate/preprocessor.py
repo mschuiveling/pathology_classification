@@ -139,6 +139,9 @@ class Preprocessor:
     ) -> np.ndarray:
         with open(segmentation_path, "r") as f:
             annotation = json.load(f)
+        
+        print (segmentation_path)
+        
 
         segmentation = np.zeros(
             (
@@ -147,7 +150,7 @@ class Preprocessor:
             ),
             dtype=np.uint8,
         )
-
+        # only select Tumor annotations
         for annotation_part in annotation["features"]:
             if annotation_part["geometry"]["type"] == "Polygon" and annotation_part["properties"]["classification"]["name"] == "Tumor":
                 coordinates = (
@@ -161,6 +164,20 @@ class Preprocessor:
                     1,
                 )
 
+            elif annotation_part["geometry"]["type"] == "MultiPolygon" and annotation_part["properties"]["classification"]["name"] == "Tumor":
+                for polygon in annotation_part["geometry"]["coordinates"]:
+                    coordinates = (
+                        np.array(polygon[0])
+                        / slide.level_downsamples[self.config["preprocessing_level"]]
+                    ).astype(np.int32)
+
+                    cv2.fillPoly(
+                        segmentation,
+                        [coordinates],
+                        1,
+                    )
+
+            print (annotation_part["properties"]["classification"]["name"])
             return segmentation
 
     def save_tile_coordinates(
@@ -324,6 +341,10 @@ def main(config):
     preprocessor = Preprocessor(config)
 
     manifest = pd.read_csv(config["manifest_file_path"])
+
+     # Filter manifest to include only rows where 'multiple_selection' == 'yes'
+    manifest = manifest[manifest['multiple_selection'] == 'yes']
+    
     slide_paths = manifest["slide_path"].values
 
     preprocessor.patch_coordinates_save_dir_path.mkdir(parents=True, exist_ok=True)

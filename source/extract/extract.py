@@ -141,13 +141,13 @@ def main(config):
         trainer.test(extractor, datamodule)
         extractor.save_features(slide.stem)
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Extract features from patches.")
     parser.add_argument(
         "--config",
         type=str,
-        default="config/test.yaml",
+        # default="config/test.yaml",
+        default = 'config/settings_rens.yaml',
         help="Path to the config file.",
     )
     args = parser.parse_args()

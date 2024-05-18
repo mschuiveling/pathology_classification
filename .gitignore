@@ -143,3 +143,6 @@ notebooks/spotlight_features.csv
 hpc.yaml
 umcu.yaml
 test.yaml
+settings_rens.yaml
+/processing_scripts/
+
