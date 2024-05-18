@@ -149,7 +149,7 @@ class Preprocessor:
         )
 
         for annotation_part in annotation["features"]:
-            if annotation_part["geometry"]["type"] == "Polygon":
+            if annotation_part["geometry"]["type"] == "Polygon" and annotation_part["properties"]["classification"]["name"] == "Tumor":
                 coordinates = (
                     np.array(annotation_part["geometry"]["coordinates"][0])
                     / slide.level_downsamples[self.config["preprocessing_level"]]
