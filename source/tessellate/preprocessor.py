@@ -88,15 +88,16 @@ class Preprocessor:
         # create automatic segmentation and load all manual segmentations
         segmentations = {}
         segmentations["automatic"] = self.create_segmentation(img)
-        for segmentation_path_column_name in self.config[
-            "segmentation_path_column_names"
-        ]:
-            segmentation_path = self.manifest.loc[
-                Path(slide_path).stem, segmentation_path_column_name
-            ]
-            segmentations[segmentation_path_column_name] = self.load_segmentation(
-                slide, segmentation_path
-            )
+
+        segmentation_path_column_name = self.config["segmentation_path_column_name"]
+        segmentation_path = self.manifest.loc[
+            Path(slide_path).stem, segmentation_path_column_name
+        ]
+        if isinstance(segmentation_path, pd.Series):
+            segmentation_path = segmentation_path.iloc[0]
+        segmentations[segmentation_path_column_name] = self.load_segmentation(
+            slide, segmentation_path
+        )
 
         # Calculate the scaling factor between the preprocessing level and the extraction level
         scaling_factor = (
@@ -138,10 +139,7 @@ class Preprocessor:
         self, slide: OpenSlide, segmentation_path: str | os.PathLike
     ) -> np.ndarray:
         with open(segmentation_path, "r") as f:
-            annotation = json.load(f)
-        
-        print (segmentation_path)
-        
+            annotation = json.load(f)      
 
         segmentation = np.zeros(
             (
@@ -177,8 +175,7 @@ class Preprocessor:
                         1,
                     )
 
-            print (annotation_part["properties"]["classification"]["name"])
-            return segmentation
+        return segmentation
 
     def save_tile_coordinates(
         self,
@@ -346,6 +343,7 @@ def main(config):
     manifest = manifest[manifest['multiple_selection'] == 'yes']
     
     slide_paths = manifest["slide_path"].values
+
 
     preprocessor.patch_coordinates_save_dir_path.mkdir(parents=True, exist_ok=True)
     preprocessor.tile_images_save_dir_path.mkdir(parents=True, exist_ok=True)
